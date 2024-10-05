@@ -17,7 +17,7 @@ def main():
 
     dataset_id = args.dataset_id
     auth_token = args.auth_token
-    output_dir = args.output_dir
+    output_dir = os.path.join(args.output_dir, args.dataset_id)
 
     if not dataset_id or not auth_token:
         print("Dataset ID and Auth Token must be provided either in the script or via command-line arguments.")
