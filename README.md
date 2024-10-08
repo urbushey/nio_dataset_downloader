@@ -1,5 +1,5 @@
 # nio_dataset_downloader
-Downloads dataset part files in bulk from the Narrative API. 
+Downloads dataset part files in bulk from the Narrative API and provides tools for processing the downloaded data.
 
 ## Download Dataset Files Script
 
@@ -14,11 +14,16 @@ This Python script downloads all Parquet files for a given dataset ID from the N
 ### Requirements
 
 - **Python 3.x**
-- **Requests Library**: Install using `pip install requests`
+- **Required Libraries**: 
+  ```bash
+  pip install requests pandas pyarrow
+  ```
 
-### Usage
+### Scripts
 
-#### 1. Setting Parameters
+#### 1. Dataset Downloader (`download_dataset_files.py`)
+
+##### Setting Parameters
 
 You can configure the script by setting default values within the script or by providing command-line arguments.
 
@@ -35,7 +40,7 @@ You can configure the script by setting default values within the script or by p
   - `--auth-token`: Your Bearer authentication token.
   - `--output-dir`: Directory to save downloaded files (default is the current directory).
 
-#### 2. Running the Script
+##### Running the Script
 
 - **Using Script Defaults**:
   ```bash
@@ -52,11 +57,53 @@ You can configure the script by setting default values within the script or by p
 python download_dataset_files.py --dataset-id 13738 --auth-token C3w9vSJf1WieKGli8uThew== --output-dir ./downloads
 ```
 
+#### 2. Parquet to CSV Converter (`parquet_to_csv.py`)
 
-### Dependencies
+This utility script combines multiple Parquet files from a directory into a single CSV file.
 
-Ensure you have the required libraries installed:
+##### Features
+- Processes all Parquet files in a specified directory (non-recursive)
+- Combines them into a single CSV file
+- Default output filename based on input directory name
+- Optional custom output filename
+- Progress reporting during processing
 
-```bash
-pip install requests
-```
+##### Usage
+
+- **Basic Usage** (uses directory name for output):
+  ```bash
+  python parquet_to_csv.py ./datasets/123
+  ```
+  This will create `123.csv` containing data from all Parquet files in `./datasets/123/`
+
+- **Custom Output Filename**:
+  ```bash
+  python parquet_to_csv.py ./datasets/123 -o custom_output.csv
+  ```
+
+##### Command-Line Arguments
+- `path` (required): Path to the directory containing Parquet files
+- `-o, --output` (optional): Custom output filename for the CSV
+
+##### Example Workflow
+1. Download dataset:
+   ```bash
+   python download_dataset_files.py --dataset-id 13738 --output-dir ./downloads
+   ```
+
+2. Convert downloaded Parquet files to CSV:
+   ```bash
+   python parquet_to_csv.py ./downloads/13738
+   ```
+
+### Troubleshooting
+
+If you encounter any issues:
+1. Ensure all required libraries are installed
+2. Verify your authentication token is valid
+3. Check that you have write permissions in the output directory
+4. For large datasets, ensure sufficient disk space is available
+
+### Contributing
+
+Feel free to submit issues and pull requests for improvements to these tools.
