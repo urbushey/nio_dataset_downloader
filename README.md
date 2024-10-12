@@ -88,7 +88,7 @@ This utility script combines multiple Parquet files from a directory into a sing
 ##### Example Workflow
 1. Download dataset:
    ```bash
-   python download_dataset_files.py --dataset-id 13738 --output-dir ./downloads
+   python download_dataset_files.py --dataset-id 13738 --auth-token *****== --output-dir ./downloads
    ```
 
 2. Convert downloaded Parquet files to CSV:
