@@ -46,7 +46,7 @@ def update_field_descriptions(dataset_json, csv_df):
     updated_fields = []
     for _, row in csv_df.iterrows():
         field_name = row['field_name']
-        field_description = row['field_description']
+        field_description = row['description']
         
         # Check if the field exists in the dataset
         if field_name in dataset_json['schema']['properties']:
@@ -93,3 +93,5 @@ if __name__ == "__main__":
     
     # Call the main function with the parsed arguments
     main(args.api_token, args.dataset_id, args.csv_file_path)
+
+

@@ -96,6 +96,75 @@ This utility script combines multiple Parquet files from a directory into a sing
    python parquet_to_csv.py ./downloads/13738
    ```
 
+
+Here’s the updated section for the README to include the script for updating field names with descriptions from a CSV file:
+
+---
+
+#### 3. Field Name and Description Updater (`update_field_descriptions.py`)
+
+This script allows you to update the field names and descriptions for a dataset in the Narrative API based on the data provided in a CSV file. It verifies that all fields in the CSV exist in the dataset schema before making any updates.
+
+##### CSV File Structure
+
+The CSV file should have the following two columns:
+
+- **`field_name`**: The unique name of the field within the dataset.
+- **`description`**: The new description to be applied to the field.
+
+**Example CSV**:
+```csv
+field_name,description
+field1,Description for field1
+field2,Description for field2
+```
+
+##### Features
+- **Schema Validation**: The script checks that all fields in the CSV exist in the dataset before updating.
+- **Field Description Update**: Overwrites the existing field descriptions in the dataset with the values from the CSV.
+- **Error Handling**: If any field in the CSV is not found in the dataset schema, the script will raise an error and abort.
+- **API Integration**: Interacts with the Narrative API using the provided bearer authentication token.
+
+##### Usage
+
+1. **Command-Line Arguments**:
+   - `api_token`: Your bearer authentication token for the Narrative API.
+   - `dataset_id`: The ID of the dataset to update.
+   - `csv_file_path`: The path to the CSV file containing field names and descriptions.
+
+2. **Running the Script**:
+
+```bash
+python update_field_descriptions.py <api_token> <dataset_id> <csv_file_path>
+```
+
+**Example**:
+```bash
+python update_field_descriptions.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descriptions.csv
+```
+
+##### Workflow Example
+
+1. Prepare your CSV file with updated field descriptions:
+   ```csv
+   field_name,description
+   field1,Updated description for field1
+   field2,Updated description for field2
+   ```
+
+2. Run the script to update the dataset:
+   ```bash
+   python update_field_descriptions.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descriptions.csv
+   ```
+
+3. The script will verify the field names and update their descriptions in the Narrative dataset. It will output the success message along with the list of updated fields.
+
+##### Error Handling
+
+- If any fields in the CSV do not match the dataset schema, the script will show an error message and abort the operation.
+- The script will also handle API errors such as authentication failures or issues with dataset retrieval.
+
+
 ### Troubleshooting
 
 If you encounter any issues:
