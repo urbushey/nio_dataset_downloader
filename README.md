@@ -96,11 +96,6 @@ This utility script combines multiple Parquet files from a directory into a sing
    python parquet_to_csv.py ./downloads/13738
    ```
 
-
-Here’s the updated section for the README to include the script for updating field names with descriptions from a CSV file:
-
----
-
 #### 3. Field Name and Description Updater (`update_field_descriptions.py`)
 
 This script allows you to update the field names and descriptions for a dataset in the Narrative API based on the data provided in a CSV file. It verifies that all fields in the CSV exist in the dataset schema before making any updates.
@@ -164,6 +159,52 @@ python update_field_descriptions.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descr
 - If any fields in the CSV do not match the dataset schema, the script will show an error message and abort the operation.
 - The script will also handle API errors such as authentication failures or issues with dataset retrieval.
 
+#### 4. File Uploader with Chunking (`upload_file_to_dataset.py`)
+
+This script uploads files to a Narrative dataset, supporting chunking for large files. It can handle CSV, JSON, and Parquet file formats.
+
+##### Features
+- **File Chunking**: Splits large files into chunks of 500,000 rows for upload.
+- **Multiple File Formats**: Supports CSV, JSON, and Parquet.
+- **API Integration**: Uses the Narrative API for uploading files in chunks.
+
+##### Requirements
+
+- **Python 3.x**
+- **Required Libraries**: 
+  ```bash
+  pip install requests pandas pyarrow
+  ```
+
+##### Usage
+
+1. **Command-Line Arguments**:
+   - `api_token`: Your bearer authentication token for the Narrative API.
+   - `dataset_id`: The ID of the dataset to upload the file to.
+   - `file_path`: The path to the file to upload.
+   - `file_type`: The type of the file to upload (`csv`, `json`, `parquet`).
+
+2. **Running the Script**:
+
+```bash
+python upload_file_to_dataset.py <api_token> <dataset_id> <file_path> <file_type>
+```
+
+**Example**:
+```bash
+python upload_file_to_dataset.py Q58rYVwyIu7SYGKGokc4GA== 14016 ./data.csv csv
+```
+
+##### Workflow Example
+
+1. Prepare your file for upload, ensuring it is in CSV, JSON, or Parquet format.
+
+2. Run the script to upload the file in chunks:
+   ```bash
+   python upload_file_to_dataset.py Q58rYVwyIu7SYGKGokc4GA== 14016 ./data.csv csv
+   ```
+
+3. The script will split the file into chunks and upload each chunk to the specified dataset.
 
 ### Troubleshooting
 
