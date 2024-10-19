@@ -12,15 +12,21 @@ CHUNK_SIZE_ROWS = 50000000
 
 def get_upload_url(api_token, file_name):
     """Get the upload URL from the Narrative API."""
-    url = f'https://app-dev.narrative.io/openapi/uploads/{file_name}'
+    url = f'https://app.narrative.io/openapi/uploads/{file_name}'
     headers = {
         'Authorization': f'Bearer {api_token}',
         'accept': 'application/json',
         'content-type': 'application/json',
     }
+    
+    # Log the Authorization token (for debugging only)
+    logging.debug(f"Using API Token: {api_token}")
+    logging.debug(f"Headers: {headers}")
+    
     response = requests.post(url, headers=headers)
     response.raise_for_status()
     return response.json()
+
 
 def upload_file_to_s3(upload_url, file_chunk):
     """Upload the file chunk to the S3 URL provided by the Narrative API."""
@@ -28,7 +34,7 @@ def upload_file_to_s3(upload_url, file_chunk):
     response.raise_for_status()
 
 def notify_narrative(api_token, dataset_id, source_file):
-    url = f"https://app-dev.narrative.io/openapi/datasets/{dataset_id}/upload"
+    url = f"https://app.narrative.io/openapi/datasets/{dataset_id}/upload"
     headers = {
         'Authorization': f'Bearer {api_token}',
         'Content-Type': 'application/json'
