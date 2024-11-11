@@ -164,3 +164,4 @@ cython_debug/
 # project-specific exclusions
 ./downloads/*
 *.csv
+*.parquet
