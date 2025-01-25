@@ -130,12 +130,12 @@ field2,Description for field2
 2. **Running the Script**:
 
 ```bash
-python update_field_descriptions.py <api_token> <dataset_id> <csv_file_path>
+python update_dataset.py <api_token> <dataset_id> <csv_file_path>
 ```
 
 **Example**:
 ```bash
-python update_field_descriptions.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descriptions.csv
+python update_dataset.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descriptions.csv
 ```
 
 ##### Workflow Example
@@ -149,7 +149,7 @@ python update_field_descriptions.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descr
 
 2. Run the script to update the dataset:
    ```bash
-   python update_field_descriptions.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descriptions.csv
+   python update_dataset.py Q58rYVwyIu7SYGKGokc4GA== 13973 ./field_descriptions.csv
    ```
 
 3. The script will verify the field names and update their descriptions in the Narrative dataset. It will output the success message along with the list of updated fields.
