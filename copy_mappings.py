@@ -12,8 +12,12 @@ def get_dataset(dataset_id, token):
     response.raise_for_status()
     return response.json()
 
-def post_mapping(target_ds, company_id, mapping, token):
-    url = f"https://api.narrative.io/mappings/companies/{company_id}"
+def post_mapping(target_ds, company_id, mapping, token, is_admin=False):
+    if is_admin:
+        url = "https://api.narrative.io/mappings/"
+    else:
+        url = f"https://api.narrative.io/mappings/companies/{company_id}"
+    
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -39,12 +43,14 @@ def main():
     parser.add_argument("--target_ds", type=str, required=False, help="ID of the target dataset (optional)")
     parser.add_argument("--source_api_token", type=str, required=True, help="Bearer token for API authentication to fetch datasets")
     parser.add_argument("--target_api_token", type=str, required=False, help="Bearer token for API authentication to post mappings (required if target_ds is specified)")
+    parser.add_argument("--admin", action="store_true", help="Use admin API endpoint for posting mappings")
     args = parser.parse_args()
 
     source_ds = args.source_ds
     target_ds = args.target_ds
     source_api_token = args.source_api_token
     target_api_token = args.target_api_token
+    is_admin = args.admin
 
     # Validate target token is provided if target_ds is specified
     if target_ds and not target_api_token:
@@ -62,24 +68,26 @@ def main():
         print("No target dataset specified. Mappings have been saved to file only.")
         return
 
-    # Get target dataset to retrieve company_id
-    try:
-        target_data = get_dataset(target_ds, target_api_token)
-        company_id = target_data.get("company_id")
-        if not company_id:
-            print("Error: Could not find company_id in target dataset")
+    company_id = None
+    if not is_admin:
+        # Get target dataset to retrieve company_id
+        try:
+            target_data = get_dataset(target_ds, target_api_token)
+            company_id = target_data.get("company_id")
+            if not company_id:
+                print("Error: Could not find company_id in target dataset")
+                return
+        except Exception as e:
+            print(f"Error fetching target dataset: {str(e)}")
             return
-    except Exception as e:
-        print(f"Error fetching target dataset: {str(e)}")
-        return
 
-    # Copy mappings to target dataset if specified
+    # Copy mappings to target dataset
     success_count = 0
     failure_count = 0
     failures = []
 
     for mapping in mappings:
-        response = post_mapping(target_ds, company_id, mapping, target_api_token)
+        response = post_mapping(target_ds, company_id, mapping, target_api_token, is_admin)
         
         if response.status_code == 200:
             print(f"Mapping for attribute ID {mapping['attribute_id']} successfully posted.")
