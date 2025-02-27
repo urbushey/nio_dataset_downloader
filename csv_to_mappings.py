@@ -1,3 +1,15 @@
+"""
+Run a db query like the following:
+
+SELECT 
+    distinct attribute_id, mapping 
+FROM mappings 
+WHERE dataset_id IN 
+    (123)
+
+"""
+
+
 import csv
 import json
 
