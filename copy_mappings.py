@@ -36,14 +36,26 @@ def save_mappings_to_file(dataset_id, mappings):
         json.dump(mappings, f, indent=2)
     print(f"\nMappings saved to {filename}")
 
+def load_mappings_from_file(filename):
+    try:
+        with open(filename, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"Error: Mappings file '{filename}' not found")
+        return None
+    except json.JSONDecodeError:
+        print(f"Error: Mappings file '{filename}' is not valid JSON")
+        return None
+
 def main():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Copy mappings from source dataset to target dataset")
-    parser.add_argument("--source_ds", type=str, required=True, help="ID of the source dataset")
+    parser.add_argument("--source_ds", type=str, required=False, help="ID of the source dataset")
     parser.add_argument("--target_ds", type=str, required=False, help="ID of the target dataset (optional)")
-    parser.add_argument("--source_api_token", type=str, required=True, help="Bearer token for API authentication to fetch datasets")
+    parser.add_argument("--source_api_token", type=str, required=False, help="Bearer token for API authentication to fetch datasets")
     parser.add_argument("--target_api_token", type=str, required=False, help="Bearer token for API authentication to post mappings (required if target_ds is specified)")
     parser.add_argument("--admin", action="store_true", help="Use admin API endpoint for posting mappings")
+    parser.add_argument("--mappings_file", type=str, help="JSON file containing mappings to load (required if source_ds not specified)")
     args = parser.parse_args()
 
     source_ds = args.source_ds
@@ -51,19 +63,35 @@ def main():
     source_api_token = args.source_api_token
     target_api_token = args.target_api_token
     is_admin = args.admin
+    mappings_file = args.mappings_file
 
-    # Validate target token is provided if target_ds is specified
+    # Validate arguments
+    if not source_ds and not mappings_file:
+        parser.error("Either --source_ds or --mappings_file must be specified")
+    
+    if source_ds and not source_api_token:
+        parser.error("--source_api_token is required when --source_ds is specified")
+
     if target_ds and not target_api_token:
         parser.error("--target_api_token is required when --target_ds is specified")
 
-    # Retrieve source dataset
-    source_data = get_dataset(source_ds, source_api_token)
-    
-    # Save mappings to file
-    mappings = source_data.get("mappings", [])
-    save_mappings_to_file(source_ds, mappings)
+    if not source_ds and not target_ds:
+        parser.error("At least one of --source_ds or --target_ds must be specified")
 
-    # If no target dataset specified, exit after saving
+    # Get mappings either from source dataset or file
+    if source_ds:
+        # Retrieve source dataset
+        source_data = get_dataset(source_ds, source_api_token)
+        mappings = source_data.get("mappings", [])
+        # Save mappings to file
+        save_mappings_to_file(source_ds, mappings)
+    else:
+        # Load mappings from file
+        mappings = load_mappings_from_file(mappings_file)
+        if not mappings:
+            return
+
+    # If no target dataset specified, exit after saving/loading
     if not target_ds:
         print("No target dataset specified. Mappings have been saved to file only.")
         return
@@ -98,14 +126,13 @@ def main():
             failures.append({"attribute_id": mapping['attribute_id'], "error": response.text})
 
     # Summary
-    if target_ds:
-        print("\nCopy Summary:")
-        print(f"Total successful mappings: {success_count}")
-        print(f"Total failed mappings: {failure_count}")
-        if failures:
-            print("\nFailed Mappings Details:")
-            for failure in failures:
-                print(f"Attribute ID: {failure['attribute_id']}, Error: {failure['error']}")
+    print("\nCopy Summary:")
+    print(f"Total successful mappings: {success_count}")
+    print(f"Total failed mappings: {failure_count}")
+    if failures:
+        print("\nFailed Mappings Details:")
+        for failure in failures:
+            print(f"Attribute ID: {failure['attribute_id']}, Error: {failure['error']}")
 
 if __name__ == "__main__":
     main()
