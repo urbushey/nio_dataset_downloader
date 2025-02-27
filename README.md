@@ -206,6 +206,91 @@ python upload_file_to_dataset.py Q58rYVwyIu7SYGKGokc4GA== 14016 ./data.csv csv
 
 3. The script will split the file into chunks and upload each chunk to the specified dataset.
 
+#### 5. Dataset Mapping Tools
+
+##### CSV to Mappings Converter (`csv_to_mappings.py`)
+
+This script converts a CSV file containing dataset mappings into a JSON format that can be used with the copy_mappings.py script. The CSV file should contain mappings exported from the database using a query like:
+
+```sql
+SELECT 
+    distinct attribute_id, mapping 
+FROM mappings 
+WHERE dataset_id IN 
+    (your_dataset_id)
+```
+
+###### Features
+- Converts CSV mappings to JSON format
+- Cleans up mapping expressions by removing dialect information
+- Creates minimal mapping entries with only required fields
+- Compatible with copy_mappings.py for applying mappings to datasets
+
+###### CSV File Structure
+
+The CSV file should have the following columns:
+- **`attribute_id`**: The ID of the attribute being mapped
+- **`mapping`**: The JSON string containing the mapping configuration
+
+###### Usage
+
+```bash
+python csv_to_mappings.py input_mappings.csv output_mappings.json
+```
+
+##### Mapping Copy Tool (`copy_mappings.py`)
+
+This script allows you to copy mappings from one dataset to another, or apply mappings from a JSON file to a target dataset.
+
+###### Features
+- Copy mappings directly between datasets
+- Apply mappings from a JSON file to a dataset
+- Support for both admin and non-admin API endpoints
+- Detailed success/failure reporting for each mapping
+
+###### Usage
+
+1. **Copy Between Datasets**:
+```bash
+python copy_mappings.py --source_ds SOURCE_ID --target_ds TARGET_ID \
+                       --source_api_token SOURCE_TOKEN --target_api_token TARGET_TOKEN
+```
+
+2. **Apply Mappings from File**:
+```bash
+python copy_mappings.py --mappings_file mappings.json --target_ds TARGET_ID \
+                       --target_api_token TARGET_TOKEN
+```
+
+###### Command-Line Arguments
+- `--source_ds`: ID of source dataset (optional if using mappings file)
+- `--target_ds`: ID of target dataset (optional if only saving to file)
+- `--source_api_token`: API token for source dataset access
+- `--target_api_token`: API token for target dataset access
+- `--admin`: Use admin API endpoint for posting mappings
+- `--mappings_file`: JSON file containing mappings to load
+
+###### Example Workflows
+
+1. **Export and Copy Mappings**:
+```bash
+# First, export mappings from database to CSV
+# Then convert CSV to JSON format
+python csv_to_mappings.py exported_mappings.csv converted_mappings.json
+
+# Finally, apply the mappings to target dataset
+python copy_mappings.py --mappings_file converted_mappings.json \
+                       --target_ds TARGET_DATASET_ID \
+                       --target_api_token YOUR_API_TOKEN
+```
+
+2. **Direct Dataset Copy**:
+```bash
+python copy_mappings.py --source_ds 19723 --target_ds 19724 \
+                       --source_api_token SOURCE_TOKEN \
+                       --target_api_token TARGET_TOKEN
+```
+
 ### Troubleshooting
 
 If you encounter any issues:
