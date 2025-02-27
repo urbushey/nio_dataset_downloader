@@ -27,10 +27,10 @@ def post_mapping(target_ds, mapping, token):
 def main():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Copy mappings from source dataset to target dataset")
-    parser.add_argument("source_ds", type=str, help="ID of the source dataset")
-    parser.add_argument("target_ds", type=str, help="ID of the target dataset")
-    parser.add_argument("source_api_token", type=str, help="Bearer token for API authentication to fetch datasets")
-    parser.add_argument("admin_api_token", type=str, help="Bearer token for API authentication to post mappings")
+    parser.add_argument("--source_ds", type=str, required=True, help="ID of the source dataset")
+    parser.add_argument("--target_ds", type=str, required=True, help="ID of the target dataset")
+    parser.add_argument("--source_api_token", type=str, required=True, help="Bearer token for API authentication to fetch datasets")
+    parser.add_argument("--admin_api_token", type=str, required=True, help="Bearer token for API authentication to post mappings")
     args = parser.parse_args()
 
     source_ds = args.source_ds
